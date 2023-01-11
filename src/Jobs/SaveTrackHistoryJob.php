@@ -43,9 +43,10 @@ class SaveTrackHistoryJob implements ShouldQueue
         }
 
         collect($this->dirtyAttribute)->filter(function ($value, $key) use ($columnsExceptions) {
-            if (isset($this->originalAttribute[$key]) && $this->originalAttribute[$key] != $value) {
+            if (isset($this->originalAttribute[$key]) && $this->originalAttribute[$key] == $value) {
                 return false;
             }
+
             return !in_array($key, $columnsExceptions);
         })->map(function ($value, $key) {
             TrackHistory::query()->create([
