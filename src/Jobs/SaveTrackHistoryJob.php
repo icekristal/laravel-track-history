@@ -42,11 +42,9 @@ class SaveTrackHistoryJob implements ShouldQueue
             return;
         }
 
-        Log::debug($columnsExceptions);
-
         collect($this->dirtyAttribute)->filter(function ($value, $key) use ($columnsExceptions) {
-            return !in_array($key, $columnsExceptions) && $this->originalAttribute[$key] != $value;
-        })->mapWithKeys(function ($value, $key) {
+            return !in_array($key, $columnsExceptions) && $this?->originalAttribute[$key] != $value;
+        })->map(function ($value, $key) {
             TrackHistory::query()->create([
                 'table_name' => $this->changedModel?->getTable() ?? null,
                 'changed_model_type' => get_class($this->changedModel),
@@ -62,5 +60,6 @@ class SaveTrackHistoryJob implements ShouldQueue
                 'translates' => null,
             ]);
         });
+
     }
 }
