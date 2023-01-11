@@ -17,6 +17,7 @@ class SaveTrackHistoryJob implements ShouldQueue
     public function __construct(
         public $changedModel,
         public $dirtyAttribute,
+        public $originalAttribute,
         public $changeOwner = null,
         public $changedRelationshipModel = null,
         public $otherInfo = null)
@@ -41,8 +42,10 @@ class SaveTrackHistoryJob implements ShouldQueue
             return;
         }
 
+        Log::debug($columnsExceptions);
+
         collect($this->dirtyAttribute)->filter(function ($value, $key) use ($columnsExceptions) {
-            return !in_array($key, $columnsExceptions);
+            return !in_array($key, $columnsExceptions) && $this->originalAttribute[$key] != $value;
         })->mapWithKeys(function ($value, $key) {
             TrackHistory::query()->create([
                 'table_name' => $this->changedModel?->getTable() ?? null,
@@ -53,9 +56,9 @@ class SaveTrackHistoryJob implements ShouldQueue
                 'change_owner_type' => !is_null($this->changeOwner) ? get_class($this->changeOwner) : null,
                 'change_owner_id' => !is_null($this->changeOwner) ? $this->changeOwner->id : null,
                 'changed_column' => $key,
-                'changed_value_from' => $this->changedModel?->getOriginal($key) ?? null,
+                'changed_value_from' => $this->originalAttribute[$key] ?? null,
                 'changed_value_to' => $value ?? null,
-                'other' => $this->otherInfo,
+                'other' => $this->otherInfo ?? null,
                 'translates' => null,
             ]);
         });
