@@ -36,7 +36,7 @@ class SaveTrackHistoryJob implements ShouldQueue
         }
         $columnsExceptions = config('track_history.global_columns_exceptions') + $additionalExceptions;
 
-        $this->dirtyAttribute->filter(function ($value, $key) use ($columnsExceptions) {
+        collect($this->dirtyAttribute)->filter(function ($value, $key) use ($columnsExceptions) {
             return is_array($columnsExceptions) && !in_array($key, $columnsExceptions);
         })->mapWithKeys(function ($value, $key) {
             TrackHistory::query()->create([
