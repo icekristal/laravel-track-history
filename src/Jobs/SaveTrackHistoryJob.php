@@ -8,6 +8,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Log;
 
 class SaveTrackHistoryJob implements ShouldQueue
 {
@@ -35,10 +36,11 @@ class SaveTrackHistoryJob implements ShouldQueue
             $additionalExceptions = config('track_history.models_columns_exceptions.' . $this->changedModel::class);
         }
         $columnsExceptions = config('track_history.global_columns_exceptions') + $additionalExceptions;
-
+        Log::debug($this->dirtyAttribute);
         collect($this->dirtyAttribute)->filter(function ($value, $key) use ($columnsExceptions) {
-            return is_array($columnsExceptions) && !in_array($key, $columnsExceptions);
+            return !is_array($columnsExceptions) || !in_array($key, $columnsExceptions);
         })->mapWithKeys(function ($value, $key) {
+            Log::debug("{$key} => {$value}");
             TrackHistory::query()->create([
                 'table_name' => $this->changedModel?->getTable() ?? null,
                 'changed_model_type' => get_class($this->changedModel),
