@@ -32,15 +32,18 @@ class SaveTrackHistoryJob implements ShouldQueue
     public function handle(): void
     {
         $additionalExceptions = [];
-        if(!is_null(config('track_history.models_columns_exceptions.' . $this->changedModel::class)) && is_array(config('track_history.models_columns_exceptions.' . $this->changedModel::class))) {
+        if (!is_null(config('track_history.models_columns_exceptions.' . $this->changedModel::class)) && is_array(config('track_history.models_columns_exceptions.' . $this->changedModel::class))) {
             $additionalExceptions = config('track_history.models_columns_exceptions.' . $this->changedModel::class);
         }
         $columnsExceptions = config('track_history.global_columns_exceptions') + $additionalExceptions;
-        Log::debug($this->dirtyAttribute);
+        if (!is_array($columnsExceptions)) {
+            Log::error("columnsExceptions in not array");
+            return;
+        }
+
         collect($this->dirtyAttribute)->filter(function ($value, $key) use ($columnsExceptions) {
-            return !is_array($columnsExceptions) || !in_array($key, $columnsExceptions);
+            return !in_array($key, $columnsExceptions);
         })->mapWithKeys(function ($value, $key) {
-            Log::debug("{$key} => {$value}");
             TrackHistory::query()->create([
                 'table_name' => $this->changedModel?->getTable() ?? null,
                 'changed_model_type' => get_class($this->changedModel),
