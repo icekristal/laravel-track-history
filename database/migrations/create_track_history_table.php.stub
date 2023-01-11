@@ -1,0 +1,26 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('track_history', function (Blueprint $table) {
+            $table->bigIncrements('id');
+            $table->string('table_name')->nullable();
+            $table->nullableMorphs('changed_model');
+            $table->nullableMorphs('changed_relationship_model');
+            $table->string('changed_column')->nullable();
+            $table->text('changed_value_from')->nullable();
+            $table->text('changed_value_to')->nullable();
+            $table->nullableMorphs('change_owner');
+            $table->json('translates')->nullable();
+            $table->json('other')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+        });
+    }
+};
