@@ -10,8 +10,8 @@ use Illuminate\Database\Eloquent\Relations\MorphTo;
  * @property string $table_name
  * @property string $changed_model_type
  * @property integer $changed_model_id
- * @property string $changed_relationship_model_type
- * @property integer $changed_relationship_model_id
+ * @property string $changed_high_model_type
+ * @property integer $changed_high_model_id
  * @property string $change_owner_type
  * @property integer $change_owner_id
  * @property string $changed_column
@@ -33,7 +33,7 @@ class TrackHistory extends Model
 
 
     protected $fillable = [
-        'table_name', 'changed_model_type', 'changed_model_id', 'changed_relationship_model_type', 'changed_relationship_model_id',
+        'table_name', 'changed_model_type', 'changed_model_id', 'changed_high_model_type', 'changed_high_model_id',
         'change_owner_type', 'change_owner_id', 'changed_column', 'changed_value_from', 'changed_value_to', 'other', 'translates'
     ];
 
@@ -61,7 +61,7 @@ class TrackHistory extends Model
      *
      * @return MorphTo
      */
-    public function changedRelationshipModel(): MorphTo
+    public function changedHighModel(): MorphTo
     {
         return $this->morphTo();
     }
