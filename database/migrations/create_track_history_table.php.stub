@@ -12,7 +12,7 @@ return new class extends Migration
             $table->bigIncrements('id');
             $table->string('table_name')->nullable();
             $table->nullableMorphs('changed_model');
-            $table->nullableMorphs('changed_high_model');
+            $table->nullableMorphs('changed_h_model');
             $table->string('changed_column')->nullable();
             $table->text('changed_value_from')->nullable();
             $table->text('changed_value_to')->nullable();
