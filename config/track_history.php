@@ -3,6 +3,9 @@ return [
     'queue' => env("TRACK_HISTORY_QUEUE", 'default'),
 
     'global_columns_exceptions' => [
+        'id',
+        'uuid',
+        'password',
         'created_at',
         'updated_at'
     ],
