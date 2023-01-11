@@ -2,19 +2,18 @@
 
 namespace Icekristal\LaravelTrackHistory\Trait;
 
-use Icekristal\LaravelTrackHistory\Jobs\SaveTrackHistoryJob;
+use Icekristal\LaravelTrackHistory\Models\TrackHistory;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 trait TrackHistoryTrait
 {
-    protected function saveHistory($changeModel, $changedRelationshipModel = null, array $other = null): void
+    public function trackHistory(): MorphMany
     {
-        dispatch(new SaveTrackHistoryJob(
-            $changeModel,
-            $changeModel->getDirty(),
-            $changeModel->getOriginal(),
-            !is_null(auth()->user()) ? auth()->user() : null,
-            $changedRelationshipModel,
-            $other
-        ));
+        return $this->morphMany(TrackHistory::class, 'changed_model');
+    }
+
+    public function trackHighHistory(): MorphMany
+    {
+        return $this->morphMany(TrackHistory::class, 'changed_h_model');
     }
 }
