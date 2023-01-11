@@ -30,7 +30,11 @@ class SaveTrackHistoryJob implements ShouldQueue
      */
     public function handle(): void
     {
-        $columnsExceptions = config('track_history.global_columns_exceptions') + config('track_history.models_columns_exceptions.' . $this->changedModel::class);
+        $additionalExceptions = [];
+        if(!is_null(config('track_history.models_columns_exceptions.' . $this->changedModel::class)) && is_array(config('track_history.models_columns_exceptions.' . $this->changedModel::class))) {
+            $additionalExceptions = config('track_history.models_columns_exceptions.' . $this->changedModel::class);
+        }
+        $columnsExceptions = config('track_history.global_columns_exceptions') + $additionalExceptions;
 
         $this->dirtyAttribute->filter(function ($value, $key) use ($columnsExceptions) {
             return is_array($columnsExceptions) && !in_array($key, $columnsExceptions);
