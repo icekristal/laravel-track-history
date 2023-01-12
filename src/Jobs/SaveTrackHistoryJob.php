@@ -36,7 +36,7 @@ class SaveTrackHistoryJob implements ShouldQueue
         if (!is_null(config('track_history.models_columns_exceptions.' . $this->changedModel::class)) && is_array(config('track_history.models_columns_exceptions.' . $this->changedModel::class))) {
             $additionalExceptions = config('track_history.models_columns_exceptions.' . $this->changedModel::class);
         }
-        $columnsExceptions = config('track_history.global_columns_exceptions') + $additionalExceptions;
+        $columnsExceptions = array_merge(config('track_history.global_columns_exceptions'), $additionalExceptions);
         if (!is_array($columnsExceptions)) {
             Log::error("columnsExceptions in not array");
             return;
