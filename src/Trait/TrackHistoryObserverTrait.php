@@ -17,4 +17,20 @@ trait TrackHistoryObserverTrait
             $other
         ));
     }
+
+    protected function saveDeletedEvent($deletedModel, $deletedRelationshipModel = null, array $other = null): void
+    {
+        if (method_exists($deletedModel, 'getDeletedAtColumn')) {
+            $column = $deletedModel->getDeletedAtColumn();
+
+            dispatch(new SaveTrackHistoryJob(
+                $deletedModel,
+                ['deleted_at' => $deletedModel->$column],
+                ['deleted_at' => null],
+                !is_null(auth()->user()) ? auth()->user() : null,
+                $deletedRelationshipModel,
+                $other
+            ));
+        }
+    }
 }
