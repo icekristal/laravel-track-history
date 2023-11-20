@@ -23,6 +23,7 @@ return new class extends Migration
             $table->softDeletes();
 
             $table->index(['changed_model_id', 'changed_model_type'], 'changed_model_index', 'hash');
+            $table->index(['change_owner_id', 'change_owner_type'], 'changed_owner_index', 'hash');
         });
     }
 
