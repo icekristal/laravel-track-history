@@ -49,6 +49,10 @@ class SaveTrackHistoryJob implements ShouldQueue
 
             return !in_array($key, $columnsExceptions);
         })->map(function ($value, $key) {
+            $changedValueFrom = $this?->originalAttribute[$key] ?? null;
+            if (is_array($changedValueFrom) || is_object($changedValueFrom)) {
+                $changedValueFrom = json_encode($changedValueFrom);
+            }
             TrackHistory::query()->create([
                 'table_name' => $this->changedModel?->getTable() ?? null,
                 'changed_model_type' => get_class($this->changedModel),
@@ -58,7 +62,7 @@ class SaveTrackHistoryJob implements ShouldQueue
                 'change_owner_type' => !is_null($this->changeOwner) ? get_class($this->changeOwner) : null,
                 'change_owner_id' => !is_null($this->changeOwner) ? $this->changeOwner->id : null,
                 'changed_column' => $key,
-                'changed_value_from' => $this?->originalAttribute[$key] ?? null,
+                'changed_value_from' => $changedValueFrom ?? null,
                 'changed_value_to' => $value ?? null,
                 'other' => $this->otherInfo ?? null,
                 'translates' => null,
